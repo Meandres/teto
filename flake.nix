@@ -1,7 +1,11 @@
 {
 	description = "Teto configuration";
 	inputs = {
-		nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
+		nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.11";
+		nixvim-pkg = {
+			url = "github:nix-community/nixvim";
+			follows = "nixpkgs";
+		};
 		home-manager = {
 			url = "github:nix-community/home-manager";
 			inputs.nixpkgs.follows = "nixpkgs";
@@ -11,17 +15,14 @@
 	outputs = { 
 		self, 
 		nixpkgs,
+		nixvim-pkg,
 		home-manager,
 		flake-utils,
 		... 
-	}@ inputs : 
+	}@ inputs : (flake-utils.lib.eachSystem ["x86_64-linux"] (system:
 		let
-			pkgs = import nixpkgs {
-				inherit system;
-				config.allowUnfree = true;
-				overlays = [];
-			};
-			system = "x86_64-linux";
+			pkgs = nixpkgs.legacyPackages.${system};
+			nixvim = nixvim-pkg.legacyPackages.${system};
 		in {
 			nixosConfigurations = {
 				teto = inputs.nixpkgs.lib.nixosSystem {
@@ -36,5 +37,19 @@
 					];
 				};
 			};
-		};
+		})) // (let
+				pkgs = nixpkgs.legacyPackages.x86_64-linux;
+				nixvim = nixvim-pkg.legacyPackages.x86_64-linux;
+			in {
+			homeConfigurations = {
+				ilya = home-manager.lib.homeManagerConfiguration {
+					inherit pkgs;
+					modules = [ ./modules/standalone-home.nix ];
+					extraSpecialArgs = {
+						username = "ilya";
+					};
+				};
+			};
+		}
+	);
 }

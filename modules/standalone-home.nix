@@ -1,4 +1,4 @@
-{ config, pkgs, lib, username, ... }:
+{ config, pkgs, nixvim, lib, username, ... }:
 {    
 	imports = [
 		./home-config/i3.nix
@@ -9,7 +9,7 @@
 	config = {
 		home = {
 			username = username;
-			homeDirectory = lib.mkDefault "/home/${username}";
+			homeDirectory = "/home/${username}";
 			stateVersion = "24.11";
 		};
         xdg.cacheHome = "/scratch/${username}/.cache";

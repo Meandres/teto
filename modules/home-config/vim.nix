@@ -1,15 +1,31 @@
-{ pkgs, ... } : {
-	programs.vim = {
+{ pkgs, nixvim, ... } : {
+	imports = [
+		nixvim.homeManagerModules.nixvim
+		nixvim.nixosModules.nixvim
+	];
+	programs.nixvim = {
 		enable = true;
 		defaultEditor = true;
-		settings = {
-			expandtab = true;
-			ignorecase = true;
-			number = true;
-			shiftwidth = 2;
-			tabstop = 2;	
+		colorschemes.everforest.enable = true;
+		vimAlias = true;
+		plugins = {
+			airline.enable = true;
+			barbar = {
+				enable = true;
+				settings = {
+					auto_hide = 1;
+					clickable = true;
+				};
+			};
+			gitgutter.enable = true;
 		};
-		extraConfig = ''
+		
+		extraConfigVim = ''
+			set expandtab
+			set ignorecase
+			set number
+			set shiftwidth=2
+			set tabstop=2
 			set nocompatible
 			filetype on
 			filetype plugin on
@@ -23,30 +39,11 @@
 			set wildmode=list:longest
 			set wildignore=*.docx,*.jpg,*.png,*.gif,*.pdf,*.odt,*.exe,*.img
 
-			nnoremap <C-t> :NERDTree<CR>
-			let g:ycm_autoclose_preview_window_after_insertion=1
-			let g:rustfmt_autosave=1
-
 			if has('termguicolors')
     		set termguicolors
 			endif
 
 			set background=dark
-			let g:everforest_background='hard'
-			let g:everforest_better_performance=1
-
-			colorscheme everforest
-			let g:airline_theme = 'everforest'
 		'';
-	plugins = [
-		pkgs.vimPlugins.vim-addon-nix
-		pkgs.vimPlugins.ale
-		pkgs.vimPlugins.vim-polyglot
-		pkgs.vimPlugins.everforest
-		pkgs.vimPlugins.vim-surround
-		pkgs.vimPlugins.vim-airline
-		pkgs.vimPlugins.vim-gitgutter
-		pkgs.vimPlugins.YouCompleteMe
-	];
 	};
 }
