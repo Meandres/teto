@@ -55,6 +55,7 @@
 	  };
   };
 
+  environment.pathsToLink = [ "/libexec" ];
 	users.groups.meandres = {};
 	users.users.meandres = {
 		isNormalUser = true;
@@ -66,7 +67,7 @@
   services.printing.enable = true;
 
   # Enable sound with pipewire.
-  hardware.pulseaudio.enable = false;
+  services.pulseaudio.enable = false;
   security.rtkit.enable = true;
   services.pipewire = {
     enable = true;
@@ -79,7 +80,7 @@
   nixpkgs.config.allowUnfree = true;
 
 
-  system.stateVersion = "24.05";
+  system.stateVersion = "25.05";
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 }

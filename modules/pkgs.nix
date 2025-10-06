@@ -6,6 +6,7 @@
 		ack
 		git
 		htop
+    mons
 
 		# internet
 		firefox
@@ -21,5 +22,9 @@
 		# multimedia
 		vlc
 		spotify	
+
+    #settings
+    lightdm
+    pavucontrol
   ];
 }

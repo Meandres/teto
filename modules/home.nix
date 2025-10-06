@@ -1,28 +1,28 @@
-{ config, pkgs, lib, username, ... }:
+{ config, pkgs, username, nixvim, ... }:
 {    
 	imports = [
 		./home-config/i3.nix
 		./home-config/vim.nix
-		#./home-config/polybar.nix
+		./home-config/polybar.nix
 		#./home-config/alacritty.nix
 	];
-	config = {
-		home = {
-			username = username;
-			homeDirectory = lib.mkDefault "/home/${username}";
-			stateVersion = "24.11";
-		};
-        xdg.cacheHome = "/scratch/${username}/.cache";
-        xdg.stateHome = "/scratch/${username}/.local/share";
+	home = {
+		username = "${username}";
+		homeDirectory = "/home/${username}";
+		stateVersion = "25.05";
+	};
+	xdg.enable = true;
+	#xdg.cacheHome = "/scratch/${username}/.cache";
+	#xdg.stateHome = "/scratch/${username}/.local/share";
 
-		programs = {
-			home-manager.enable = true;
-			git = {
-				enable = true;
-				userName = "Meandres";
-				userEmail = "ilya.meignan-masson@mailoo.org";
-			};
-			bash.enable = true;
-		};
+	programs.home-manager.enable = true;
+	programs.git = {
+		enable = true;
+		userName = "Meandres";
+		userEmail = "ilya.meignan-masson@mailoo.org";
+	};
+	programs.bash = {
+		enable = true;
+		enableCompletion = true;
 	};
 }

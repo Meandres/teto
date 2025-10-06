@@ -1,12 +1,10 @@
-{ pkgs, nixvim, ... } : {
-	imports = [
-		nixvim.homeManagerModules.nixvim
-		nixvim.nixosModules.nixvim
-	];
+{ pkgs, ... } : {
 	programs.nixvim = {
 		enable = true;
 		defaultEditor = true;
-		colorschemes.everforest.enable = true;
+		colorschemes.kanagawa.enable = true;
+		colorschemes.kanagawa.settings.theme = "dragon";
+    plugins.web-devicons.enable = true;
 		vimAlias = true;
 		plugins = {
 			airline.enable = true;
@@ -43,7 +41,7 @@
     		set termguicolors
 			endif
 
-			set background=dark
 		'';
+		#set background=dark
 	};
 }

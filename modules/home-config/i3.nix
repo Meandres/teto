@@ -8,7 +8,7 @@
 			modifier = "Mod1";
 			bars = [];
 
-			window.border = 0;
+			#window.border = 0;
 
 			terminal = "alacritty";
 
@@ -55,16 +55,20 @@
 			
 			gaps = {
 				inner = 14;
-				outer = -2;
+				bottom = -2;
 				smartGaps = true;
+        #smartBorders = "on";
 			};
+
+      startup = [
+        { command = "systemctl --user restart polybar"; always = true; notification = false; }
+      ];
 
 			menu = "${pkgs.rofi}/bin/rofi";
 			
 			keybindings = lib.mkOptionDefault {
 				"${modifier}+Return" = "exec ${pkgs.alacritty}/bin/alacritty";
-				"${modifier}+Shift+q" = "kill";
-				"${modifier}+d" = "exec --no-startup-id ${pkgs.rofi}/bin/rofi -theme solarized -font 'hack 10' -icon-theme 'Papirus' -show-icons";
+				"${modifier}+d" = "exec --no-startup-id ${pkgs.rofi}/bin/rofi -show drun -theme solarized -font 'hack 10' -icon-theme 'Papirus' -show-icons";
 				"XF86AudioMute" = "exec amixer set Master toggle";
         "XF86AudioLowerVolume" = "exec amixer set Master 4%-";
         "XF86AudioRaiseVolume" = "exec amixer set Master 4%+";
@@ -79,38 +83,26 @@
 				"${modifier}+Ctrl+Shift+r" = "exec --no-startup-id systemctl reboot";
 				"${modifier}+Ctrl+s" = "exec --no-startup-id ${pkgs.i3lock}/bin/i3lock && systemctl suspend";
 			};
+      floating = {
+        criteria = [
+			    { title="alsamixer"; }
+          { class="Clipgrab"; }
+			    { title="File Transfer*"; }
+			    { class="Galculator"; }
+			    { class="GParted"; }
+          { class="Lightdm-settings"; }
+			    { class="Lxappearance"; }
+			    { title="MuseScore: Play Panel"; }
+			    { class="Pavucontrol"; }
+			    { title="Contrôle du volume"; }
+        ];
+        border = 1;
+      };
 		};
 		
 		extraConfig = ''
-			assign [class="Thunderbird"] $ws2
-			assign [class="Slack"] $ws3
-			assign [class="Spotify"] $ws2
-			assign [class="Discord"] $ws8
-
-			for_window [title="alsamixer"] floating enable border pixel 1
-			for_window [class="calamares"] floating enable border normal
-			for_window [class="Clipgrab"] floating enable
-			for_window [title="File Transfer*"] floating enable
-			for_window [class="fpakman"] floating enable
-			for_window [class="Galculator"] floating enable border pixel 1
-			for_window [class="GParted"] floating enable border normal
-			for_window [title="i3_help"] floating enable sticky enable border normal
-			for_window [class="Lightdm-settings"] floating enable
-			for_window [class="Lxappearance"] floating enable sticky enable border normal
-			for_window [title="MuseScore: Play Panel"] floating enable
-			for_window [class="Nitrogen"] floating enable sticky enable border normal
-			for_window [class="Oblogout"] fullscreen enable
-			for_window [class="octopi"] floating enable
-			for_window [class="Pavucontrol"] floating enable
-			for_window [class="qt5ct"] floating enable sticky enable border normal
-			for_window [class="Qtconfig-qt4"] floating enable sticky enable border normal
-			for_window [class="Simple-scan"] floating enable border normal
-			for_window [class="(?i)System-config-printer.py"] floating enable border normal
-			for_window [class="Timeset-gui"] floating enable border normal
-			for_window [class="(?i)virtualbox"] floating enable border normal
-			for_window [class="Xfburn"] floating enable
-
 			for_window [urgent=latest] focus
 		'';
+      #for_window [class="^.*"] border pixel 2
 	};
 }
