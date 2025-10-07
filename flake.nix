@@ -47,39 +47,16 @@
         };
       };
       homeConfigurations = {
-        meandres = home-manager.lib.homeManagerConfiguration {
+        ilya = home-manager.lib.homeManagerConfiguration {
           inherit pkgs;
           extraSpecialArgs = {
             username = "ilya";
           };
           modules = [
-            ./modules/home.nix
+            nixvim.homeModules.nixvim
+            ./modules/standalone-home.nix
           ];
         };
       };
     };
-	/*{
-			nixosConfigurations = {
-				teto = nixpkgs.lib.nixosSystem {
-					modules = [
-						./modules/configuration.nix 
-						home-manager.nixosModules.home-manager {
-							home-manager.useGlobalPkgs = true;
-							home-manager.useUserPackages = true;
-							home-manager.sharedModules = [ nixvim.homeManagerModules.nixvim ];
-							home-manager.users.meandres = import ./modules/home.nix;
-						}
-					];
-				};
-			};
-			homeConfigurations = {
-				ilya = home-manager.lib.homeManagerConfiguration {
-					inherit nixpkgs;
-					modules = [ ./modules/standalone-home.nix ];
-					extraSpecialArgs = {
-						username = "ilya";
-					};
-				};
-			};
-		};*/
 }
