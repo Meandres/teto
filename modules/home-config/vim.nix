@@ -6,6 +6,11 @@
 		colorschemes.kanagawa.settings.theme = "wave";
     plugins.web-devicons.enable = true;
 		vimAlias = true;
+    lsp = {
+      servers = {
+        clangd.enable = true;
+      };
+    };
 		plugins = {
 			airline.enable = true;
 			barbar = {
@@ -14,8 +19,32 @@
 					auto_hide = 1;
 					clickable = true;
 				};
+        keymaps = {
+          next.key = "é";
+          previous.key = "&";
+          close.key = "=";
+        };
 			};
 			gitgutter.enable = true;
+      illuminate = {
+        enable = true;
+        autoLoad = true;
+      };
+      lspconfig = {
+        enable = true;
+        autoLoad = true;
+      };
+      nix = {
+        enable = true;
+        autoLoad = true;
+      };
+      neo-tree = {
+        enable = true;
+        autoLoad = true;
+        settings = {
+          close_if_last_window = true;
+        };
+      };
 		};
 		
 		extraConfigVim = ''
