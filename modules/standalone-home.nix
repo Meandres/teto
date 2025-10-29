@@ -1,19 +1,21 @@
 { config, pkgs, nixvim, username, ... }:
 {    
 	imports = [
-		#./home-config/i3.nix
 		./home-config/vim.nix
-		#./home-config/polybar.nix
-		#./home-config/alacritty.nix
 	];
 	home = {
 		username = username;
 		homeDirectory = "/home/${username}";
 		stateVersion = "24.11";
+		packages = with pkgs; [
+			ack
+			git
+			htop
+		];
 	};
 	xdg.enable = true;
-  xdg.cacheHome = "/scratch/${username}/.cache";
-  xdg.stateHome = "/scratch/${username}/.local/share";
+  	xdg.cacheHome = "/scratch/${username}/.cache";
+  	xdg.stateHome = "/scratch/${username}/.local/share";
 
 	programs = {
 		home-manager.enable = true;
@@ -21,10 +23,6 @@
 			enable = true;
 			userName = "Meandres";
 			userEmail = "ilya.meignan-masson@mailoo.org";
-		};
-		bash = {
-			enable = true;
-			enableCompletion = true;
 		};
 	};
 }

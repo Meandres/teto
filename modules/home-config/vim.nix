@@ -3,7 +3,7 @@
 		enable = true;
 		defaultEditor = true;
 		colorschemes.kanagawa.enable = true;
-		colorschemes.kanagawa.settings.theme = "dragon";
+		colorschemes.kanagawa.settings.theme = "wave";
     plugins.web-devicons.enable = true;
 		vimAlias = true;
 		plugins = {
