@@ -45,6 +45,13 @@
           close_if_last_window = true;
         };
       };
+      trouble = {
+        enable = true;
+        autoLoad = true;
+        settings = {
+          auto_close = true;
+        };
+      };
 		};
 		
 		extraConfigVim = ''
