@@ -22,7 +22,6 @@
         keymaps = {
           next.key = "é";
           previous.key = "&";
-          close.key = "=";
         };
 			};
 			gitgutter.enable = true;
@@ -76,7 +75,7 @@
 			if has('termguicolors')
     		set termguicolors
 			endif
-
+      map <F10> gg=G<C-o><C-o>
 		'';
 		#set background=dark
 	};
