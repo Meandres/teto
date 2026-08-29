@@ -1,14 +1,28 @@
-{ pkgs, lib, ... }: 
+{ pkgs, lib, ... }:
+let
+  powermenu = pkgs.writeShellScript "powermenu" ''
+    choice=$(printf "Lock\nSuspend\nReboot\nShutdown" | ${pkgs.rofi}/bin/rofi -dmenu -p " Power:")
+    case "$choice" in
+      Lock)     ${pkgs.i3lock}/bin/i3lock ;;
+      Suspend)  ${pkgs.i3lock}/bin/i3lock && systemctl suspend ;;
+      Reboot)   systemctl reboot ;;
+      Shutdown) systemctl poweroff ;;
+    esac
+  '';
+in
 {
 	config.xsession.windowManager.i3 = {
 		enable = true;
-		package = pkgs.i3-gaps;
+		package = pkgs.i3;
 
 		config = rec {
 			modifier = "Mod1";
 			bars = [];
 
-			#window.border = 0;
+			window = {
+				titlebar = false;
+				border = 1;
+			};
 
 			terminal = "alacritty";
 
@@ -52,23 +66,13 @@
 			};
 
 			defaultWorkspace = "workspace number 1";
-			
-			gaps = {
-				inner = 14;
-				bottom = -2;
-				smartGaps = true;
-        #smartBorders = "on";
-			};
-
-      startup = [
-        { command = "systemctl --user restart polybar"; always = true; notification = false; }
-      ];
 
 			menu = "${pkgs.rofi}/bin/rofi";
 			
 			keybindings = lib.mkOptionDefault {
 				"${modifier}+Return" = "exec ${pkgs.alacritty}/bin/alacritty";
-				"${modifier}+d" = "exec --no-startup-id ${pkgs.rofi}/bin/rofi -show drun -theme solarized -font 'hack 10' -icon-theme 'Papirus' -show-icons";
+				"${modifier}+d" = "exec --no-startup-id ${pkgs.rofi}/bin/rofi -show drun -modi drun";
+				"${modifier}+Shift+f" = "exec flameshot gui";
 				"XF86AudioMute" = "exec amixer set Master toggle";
         "XF86AudioLowerVolume" = "exec amixer set Master 4%-";
         "XF86AudioRaiseVolume" = "exec amixer set Master 4%+";
@@ -78,10 +82,7 @@
 				"${modifier}+Ctrl+Left" = "move workspace to output left";
 				"${modifier}+Ctrl+Up" = "move workspace to output up";
 				"${modifier}+Ctrl+Down" = "move workspace to output down";
-				"${modifier}+Ctrl+l" = "exec --no-startup-id ${pkgs.i3lock}/bin/i3lock";
-				"${modifier}+Ctrl+Shift+s" = "exec --no-startup-id systemctl poweroff";
-				"${modifier}+Ctrl+Shift+r" = "exec --no-startup-id systemctl reboot";
-				"${modifier}+Ctrl+s" = "exec --no-startup-id ${pkgs.i3lock}/bin/i3lock && systemctl suspend";
+				"${modifier}+Shift+e" = "exec --no-startup-id ${powermenu}";
 			};
       floating = {
         criteria = [
@@ -102,7 +103,8 @@
 		
 		extraConfig = ''
 			for_window [urgent=latest] focus
+			default_border pixel 1
+			default_floating_border pixel 1
 		'';
-      #for_window [class="^.*"] border pixel 2
 	};
 }

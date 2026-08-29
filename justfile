@@ -7,6 +7,6 @@ switch_hm:
 	#!/usr/bin/env bash
 	home-manager switch --flake .#ilya
 
-switch_os:
+switch_os host=`hostname`:
 	#!/usr/bin/env bash
-	sudo nixos-rebuild switch --flake .#teto
+	sudo nixos-rebuild switch --flake .#{{host}}

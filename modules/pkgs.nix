@@ -7,6 +7,8 @@
 		git
 		htop
     mons
+		just
+		claude-code
 
 		# internet
 		firefox
@@ -26,5 +28,8 @@
     #settings
     lightdm
     pavucontrol
+		arandr
+		flameshot
+		clipmenu
   ];
 }

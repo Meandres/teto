@@ -1,151 +1,186 @@
-{ pkgs, ... } : 
-let 
-  background = "#282A2E";
-  background-alt = "#373B41";
-  foreground = "#C5C8C6";
-  primary = "#F0C674";
-  secondary = "#8ABEB7";
-  disabled = "#707880";
-  black = "#263238";
-  white = "#D8DEE9";
-  red = "#BF616A";
-  red1 = "#BF3B48";
-  green = "#94AD7D";
-  green1 = "#70AD37";
-  blue = "#5E81AC";
-  blue1 = "#3C6EAC";
-  cyan = "#7AACBA";
-  cyan1 = "#56A4BA";
-  violet = "#B48EAD";
-  violet1 = "#B46AA6";
-  orange = "#D08770";
-  orange1 = "#D06847";
-  yellow = "#CFB074";
-  yellow1 = "#CF9B36";
-  focus = "#8C8C8C";
-  focus1 = "#757575";
-  unfocus = "#1A2328";
-  unfocus1 = "#101010";
+{ pkgs, ... }:
+let
+  bg     = "#1F1F1F";
+  fg     = "#FFFFFF";
+  fg-alt = "#707070";
+  accent = "#e53935";
+
+  glyph = cp: builtins.fromJSON "\"\\u${cp}\"";
+  iVolOff  = glyph "F026";
+  iVolDown = glyph "F027";
+  iVolUp   = glyph "F028";
+  iWifi    = glyph "F1EB";
+  iCpu     = glyph "F0E4";
+  iMem     = glyph "F1C0";
+  iClock   = glyph "F017";
+  iClip    = glyph "F0EA";
 in
 {
+  home.packages = with pkgs; [ nerd-fonts.iosevka nerd-fonts.symbols-only ];
+
   services.polybar = {
     enable = true;
-    package = pkgs.polybarFull; 
+    package = pkgs.polybarFull;
     script = ''
-      sudo kill -9 $(pidof polybar)
-      for m in $(polybar -M | ${pkgs.coreutils}/bin/cut -d":" -f1); do
-        export MONITOR="$m"
-        polybar bottom &
+      killall -q polybar || true
+      sleep 2
+      PRIMARY=$(polybar -M | ${pkgs.gnugrep}/bin/grep '(primary)' | ${pkgs.coreutils}/bin/cut -d':' -f1)
+      for m in $(polybar -M | ${pkgs.coreutils}/bin/cut -d':' -f1); do
+        if [ "$m" = "$PRIMARY" ]; then
+          MONITOR=$m polybar primary &
+        else
+          MONITOR=$m polybar main &
+        fi
       done
     '';
-    #for m in $(polybar -M | cut -d':' -f1); do done
     config = {
-      "bar/bottom" = {
+      "bar/main" = {
         monitor = "\${env:MONITOR}";
-        width = "100%";
-        height = "3%";
-        radius = 0;
         bottom = true;
-        override-redirect = false;
-        #wm-restack = "i3";
+        fixed-center = true;
+        width = "98%";
+        height = 40;
+        offset-x = "1%";
+        offset-y = 4;
 
-        background = "${background}";
-        foreground = "${foreground}";
-        line-size = "3pt";
-        border-size = "4pt";
-        boder-color = "#00000000";
-        padding-left = 0;
+        background = bg;
+        foreground = fg;
+
+        line-size = 2;
+        border-bottom-size = 2;
+        border-bottom-color = accent;
+
+        padding-left = 1;
         padding-right = 1;
-        module-margin = 1;
+        module-margin-left = 1;
+        module-margin-right = 1;
 
-        font = ["Noto Sans: size=11;1"];
-        separator = "|";
-        separator-foreground = "${disabled}";
+        font-0 = "Iosevka Nerd Font Mono:size=11;3";
+        font-1 = "Symbols Nerd Font Mono:size=11;3";
+
+        modules-left = "launcher i3";
+        modules-center = "date";
+        modules-right = "clipboard pulseaudio wlan cpu memory sysmenu";
+
         enable-ipc = true;
-
-        modules-left = "i3";
-        modules-right = "pulseaudio wlan date";
       };
-      
+
+      "bar/primary" = {
+        "inherit" = "bar/main";
+        modules-right = "clipboard pulseaudio wlan cpu memory sysmenu tray";
+      };
+
+      "module/launcher" = {
+        type = "custom/text";
+        format = " ☰ ";
+        format-background = accent;
+        format-foreground = fg;
+        format-padding = 1;
+        click-left = "${pkgs.rofi}/bin/rofi -show drun -modi drun &";
+      };
+
       "module/i3" = {
         type = "internal/i3";
         index-sort = true;
+        pin-workspaces = true;
 
         label-mode-padding = 2;
-        label-mode-foreground = "#000";
-        label-mode-background = "${focus}";
+        label-mode-foreground = fg;
+        label-mode-background = accent;
 
-        #focused = Active workspace on focused monitor
         label-focused = "%index%";
-        label-focused-background = "${focus}";
-        label-focused-foreground = "${black}";
-        label-focused-underline = "${focus1}";
-        label-focused-padding = 2;
+        label-focused-foreground = accent;
+        label-focused-overline = accent;
+        label-focused-padding = 3;
 
-        # unfocused = Inactive workspace on any monitor
         label-unfocused = "%index%";
-        label-unfocused-padding = 2;
-        label-unfocused-background = "${unfocus}";
-        label-unfocused-underline= "${unfocus1}";
+        label-unfocused-foreground = fg-alt;
+        label-unfocused-padding = 3;
 
-        # visible = Active workspace on unfocused monitor
         label-visible = "%index%";
-        label-visible-background = "<label-focused-background>";
-        label-visible-underline = "<label-focused-underline>";
-        label-visible-padding = "<label-focused-padding>";
+        label-visible-foreground = fg-alt;
+        label-visible-padding = 3;
 
-        # urgent = Workspace with urgency hint set
         label-urgent = "%index%";
-        label-urgent-background = "#5f5f5f";
-        label-urgent-padding = 2;
-
+        label-urgent-foreground = fg;
+        label-urgent-background = accent;
+        label-urgent-padding = 3;
       };
 
-      "module/pulseaudio" = {      
-        type = "internal/pulseaudio";
+      "module/clipboard" = {
+        type = "custom/text";
+        format = " %{T2}${iClip}%{T-} ";
+        format-foreground = fg-alt;
+        format-padding = 1;
+        click-left = "env PATH=${pkgs.rofi}/bin:$PATH CM_LAUNCHER=rofi ${pkgs.clipmenu}/bin/clipmenu &";
+      };
 
-        format-volume-prefix = "VOL ";
-        format-volume-prefix-foreground = "${primary}";
-        format-volume = "<label-volume>";
+      "module/pulseaudio" = {
+        type = "internal/pulseaudio";
+        use-ui-max = false;
+        interval = 5;
+
+        format-volume = "%{T2}<ramp-volume>%{T-} <label-volume>";
+        ramp-volume-0 = "${iVolOff}";
+        ramp-volume-1 = "${iVolDown}";
+        ramp-volume-2 = "${iVolUp}";
+
+        format-muted = "%{T2}${iVolOff}%{T-} muted";
+        format-muted-foreground = fg-alt;
 
         label-volume = "%percentage%%";
+      };
 
-        label-muted = "muted";
-        label-muted-foreground = "${disabled}";
+      "module/wlan" = {
+        type = "internal/network";
+        interface-type = "wireless";
+        interval = 5;
+
+        format-connected = "%{T2}${iWifi}%{T-} <label-connected>";
+        label-connected = "%essid%";
+
+        format-disconnected = "%{T2}${iWifi}%{T-} offline";
+        format-disconnected-foreground = fg-alt;
+      };
+
+      "module/cpu" = {
+        type = "internal/cpu";
+        interval = 1;
+        format = "%{T2}${iCpu}%{T-} <label>";
+        label = "%percentage%%";
       };
 
       "module/memory" = {
         type = "internal/memory";
         interval = 2;
-        format-prefix = "RAM ";
-        format-prefix-foreground = "${primary}";
-        label = "%percentage:2%%";
+        format = "%{T2}${iMem}%{T-} <label>";
+        label = "%mb_used%";
       };
-
-      "module/wlan" = {
-        type = "internal/network";
-        interval = 5;
-        format-connected = "<label-connected>";
-        format-disconnected = "<label-disconnected>";
-        label-disconnected = "%{F#F0C674}%ifname%%{F#707880} disconnected";
-        interface-type = "wireless";
-        label-connected = "%essid%";
-      };
-
-      #"module/eth" = {
-      #  inherit = "network-base";
-      #  interface-type = "wired";
-      #  label-connected = "%{F#F0C674}%ifname%%{F-} %local_ip%";
-      #};
 
       "module/date" = {
         type = "internal/date";
         interval = 1;
+        time = "%{T2}${iClock}%{T-} %H:%M";
+        time-alt = "%a, %d %b %Y";
+        format = "<label>";
+        label = "%time%";
+      };
 
-        date = "%H:%M:%S %Y-%m-%d";
+      "module/tray" = {
+        type = "internal/tray";
+        tray-size = "70%";
+        tray-padding = 2;
+        tray-background = bg;
+        hidden = false;
+      };
 
-        label = "%date%";
-        label-foreground = "${primary}";
+      "module/sysmenu" = {
+        type = "custom/text";
+        format = " ⏻ ";
+        format-background = accent;
+        format-foreground = fg;
+        format-padding = 1;
+        click-left = "bash -c 'r=$(printf \"Lock\\\\nSuspend\\\\nReboot\\\\nShutdown\" | ${pkgs.rofi}/bin/rofi -dmenu -p ⏻); case \"$r\" in (Lock) ${pkgs.i3lock}/bin/i3lock;; (Suspend) systemctl suspend;; (Reboot) systemctl reboot;; (Shutdown) systemctl poweroff;; esac' &";
       };
 
       "settings" = {

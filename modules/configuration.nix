@@ -1,9 +1,8 @@
-{ config, pkgs, flakepkgs, ... }:
+{ config, pkgs, username, hostname, flakepkgs, ... }:
 
 {
   imports =
     [
-      ./hardware-configuration.nix
 			./pkgs.nix
     ];
 
@@ -11,7 +10,9 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
-  networking.hostName = "teto";
+  boot.kernelPackages = pkgs.linuxPackages_latest;
+
+  networking.hostName = hostname;
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
   networking.networkmanager.enable = true;
@@ -56,10 +57,10 @@
   };
 
   environment.pathsToLink = [ "/libexec" ];
-	users.groups.meandres = {};
-	users.users.meandres = {
+	users.groups.${username} = {};
+	users.users.${username} = {
 		isNormalUser = true;
-		group = "meandres";
+		group = username;
 		extraGroups = [ "wheel" "networkmanager" ];
 	};
 
@@ -79,8 +80,9 @@
   # Install firefox.
   nixpkgs.config.allowUnfree = true;
 
-
-  system.stateVersion = "25.05";
-
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
+
+  programs.nix-ld.enable = true;
+
+  services.udisks2.enable = true;
 }
