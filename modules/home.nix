@@ -8,7 +8,7 @@
 		./home-config/rofi.nix
 		./home-config/firefox.nix
 		./home-config/alacritty.nix
-		./home-config/ssh.nix
+		(import ./home-config/ssh.nix "~/.ssh/id_ed25519_l")
 	];
 	home = {
 		username = "${username}";

@@ -1,7 +1,8 @@
 { config, pkgs, nixvim, username, ... }:
-{    
+{
 	imports = [
 		./home-config/vim.nix
+		(import ./home-config/ssh.nix "~/.ssh/id_ed25519_r")
 	];
 	home = {
 		username = username;
@@ -23,16 +24,6 @@
 			enable = true;
 			userName = "Meandres";
 			userEmail = "ilya.meignan-masson@mailoo.org";
-		};
-		ssh = {
-			enable = true;
-			matchBlocks = {
-				"*.dos.cit.tum.de" = {
-					user = username;
-					identityFile = "~/.ssh/id_ed25519_r";
-					identitiesOnly = true;
-				};
-			};
 		};
 	};
 }

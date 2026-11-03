@@ -1,5 +1,9 @@
 { pkgs, username, ... }:
 {
+  imports = [
+    (import ./home-config/ssh.nix "~/.ssh/id_ed25519_r")
+  ];
+
   home = {
     username = "${username}";
     homeDirectory = "/home/${username}";
@@ -36,16 +40,5 @@
     terminal = "screen-256color";
     historyLimit = 10000;
     mouse = true;
-  };
-
-  programs.ssh = {
-    enable = true;
-    matchBlocks = {
-      "*.dos.cit.tum.de" = {
-        user = username;
-        identityFile = "~/.ssh/id_ed25519_r";
-        identitiesOnly = true;
-      };
-    };
   };
 }

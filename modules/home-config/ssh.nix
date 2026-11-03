@@ -1,3 +1,4 @@
+identityFile:
 { lib, username, ... }:
 let
   tumAliases = [
@@ -13,6 +14,8 @@ let
       user = username;
       forwardAgent = true;
       proxyJump = "tunnel";
+      inherit identityFile;
+      identitiesOnly = true;
     };
   };
 in
@@ -27,14 +30,15 @@ in
       mehve = {
         hostname = "mehve.dos.cit.tum.de";
         user = username;
-        proxyJump = "tunnel";
-        identityFile = "~/.ssh/id_ed25519_l";
+        inherit identityFile;
         identitiesOnly = true;
       };
       "*.dos.cit.tum.de" = {
         user = username;
         forwardAgent = true;
         proxyJump = "tunnel";
+        inherit identityFile;
+        identitiesOnly = true;
       };
       ace = {
         hostname = "ace.dos.cit.tum.de";
