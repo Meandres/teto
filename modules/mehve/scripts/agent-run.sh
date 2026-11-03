@@ -18,7 +18,6 @@ mkdir -p "$SCRATCH"
 cd "$SCRATCH"
 
 started_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
-started_epoch="$(date +%s)"
 
 # Run claude with structured output. --continue preserves history per-dir.
 # Returns a JSON object with total_cost_usd, usage, and text fields.

@@ -17,18 +17,18 @@ let
   };
 
   telegramBot = pkgs.writers.writePython3Bin "mehve-telegram-bot"
-    { libraries = [ pkgs.python3Packages.python-telegram-bot ]; flakeIgnore = [ "E501" "W503" ]; }
+    { libraries = [ pkgs.python3Packages.python-telegram-bot ]; flakeIgnore = [ "E265" "E501" "W503" ]; }
     (builtins.readFile ./scripts/telegram-bot.py);
 
   prReview = pkgs.writers.writePython3Bin "mehve-pr-review"
-    { libraries = [ pkgs.python3Packages.requests ]; flakeIgnore = [ "E501" ]; }
+    { libraries = [ pkgs.python3Packages.requests ]; flakeIgnore = [ "E265" "E501" ]; }
     (builtins.readFile ./scripts/pr-review.py);
 
   # Topic + user IDs — public, not sensitive on their own.
   cfg = {
     allowedUser = "1793393622";
     groupId     = "-1004334770180";
-    prTopicId   = "-1004334770180_2";
+    prTopicId   = "2";
     repos       = "miniosv/miniosv";
   };
 in
