@@ -92,39 +92,30 @@ async def run_agent(task: str, scratch: Path, prompt: str) -> tuple[str, dict]:
     return text, summary
 
 
-async def reply_split(update: Update, body: str, summary: dict | None = None):
+async def reply_split(update: Update, body: str):
     if not body:
         body = "(no output)"
     chunks = [body[i:i + SPLIT] for i in range(0, len(body), SPLIT)]
     for chunk in chunks:
         await update.effective_message.reply_text(chunk)
-    if summary:
-        footer = (
-            f"💰 ${summary.get('cost_usd', 0):.4f}  "
-            f"🪙 in={summary.get('input_tokens', 0)} out={summary.get('output_tokens', 0)}  "
-            f"✅ {summary.get('status', '?')}"
-        )
-        await update.effective_message.reply_text(footer)
 
 
 async def on_text(update: Update, _ctx: ContextTypes.DEFAULT_TYPE):
     if not allowed(update):
         return
     msg = update.effective_message
-    topic = msg.message_thread_id
-    if topic is None:
-        return  # ignore non-topic messages
+    topic = msg.message_thread_id if msg.message_thread_id is not None else 0  # 0 = General
     prompt = msg.text or ""
     scratch = topic_scratch(topic)
     task = f"interactive:{topic}"
     log.info("topic=%s task=%s prompt=%r", topic, task, prompt[:60])
     try:
-        text, summary = await run_agent(task, scratch, prompt)
+        text, _ = await run_agent(task, scratch, prompt)
     except Exception as e:
         log.exception("agent failed")
         await msg.reply_text(f"⚠️ agent error: {e}")
         return
-    await reply_split(update, text, summary)
+    await reply_split(update, text)
 
 
 # ---------- slash commands ----------
@@ -209,19 +200,16 @@ async def cmd_run(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
         await update.effective_message.reply_text("Usage: /run <prompt>")
         return
     msg = update.effective_message
-    topic = msg.message_thread_id
-    if topic is None:
-        await update.effective_message.reply_text("Use /run inside a topic.")
-        return
+    topic = msg.message_thread_id if msg.message_thread_id is not None else 0
     prompt = " ".join(ctx.args)
     scratch = topic_scratch(topic)
     task = f"run:{topic}"
     try:
-        text, summary = await run_agent(task, scratch, prompt)
+        text, _ = await run_agent(task, scratch, prompt)
     except Exception as e:
         await msg.reply_text(f"⚠️ agent error: {e}")
         return
-    await reply_split(update, text, summary)
+    await reply_split(update, text)
 
 
 def main():
