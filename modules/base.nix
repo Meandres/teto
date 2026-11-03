@@ -15,6 +15,7 @@
     isNormalUser = true;
     group = username;
     extraGroups = [ "wheel" ];
+    initialHashedPassword = "";
   };
 
   nixpkgs.config.allowUnfree = true;

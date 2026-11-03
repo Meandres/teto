@@ -8,6 +8,7 @@
 		./home-config/rofi.nix
 		./home-config/firefox.nix
 		./home-config/alacritty.nix
+		./home-config/ssh.nix
 	];
 	home = {
 		username = "${username}";
@@ -80,20 +81,4 @@
 	programs.autorandr.enable = true;
 	services.autorandr.enable = true;
 
-	programs.ssh = {
-		enable = true;
-		matchBlocks = {
-			mehve = {
-				hostname = "mehve.your-domain.example";
-				user = username;
-				identityFile = "~/.ssh/id_ed25519_l";
-				identitiesOnly = true;
-			};
-			"*.dos.cit.tum.de" = {
-				user = username;
-				identityFile = "~/.ssh/id_ed25519_l";
-				identitiesOnly = true;
-			};
-		};
-	};
 }
