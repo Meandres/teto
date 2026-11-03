@@ -67,6 +67,7 @@ in
     "d ${scratch} 0755 ${username} ${username} -"
     "d ${scratch}/interactive 0755 ${username} ${username} -"
     "d ${scratch}/pr-review 0755 ${username} ${username} -"
+    "d ${home}/.claude 0755 ${username} ${username} -"
     "d ${skillsDir} 0755 ${username} ${username} -"
   ];
 

@@ -49,6 +49,9 @@ MAX_CONCURRENT = int(os.environ.get("MAX_CONCURRENT", "3"))
 SPLIT = int(os.environ.get("MESSAGE_SPLIT_CHARS", "3800"))
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
+# httpx logs full URLs incl. the bot token at INFO; silence it.
+for noisy in ("httpx", "httpcore", "telegram.ext.Updater"):
+    logging.getLogger(noisy).setLevel(logging.WARNING)
 log = logging.getLogger("mehve-bot")
 
 semaphore = asyncio.Semaphore(MAX_CONCURRENT)
