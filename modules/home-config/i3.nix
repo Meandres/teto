@@ -67,12 +67,18 @@ in
 
 			defaultWorkspace = "workspace number 1";
 
+			startup = [
+				{ command = "${pkgs.snixembed}/bin/snixembed --fork"; always = true; notification = false; }
+				{ command = "${pkgs.networkmanagerapplet}/bin/nm-applet"; always = true; notification = false; }
+				{ command = "${pkgs.blueman}/bin/blueman-applet"; always = true; notification = false; }
+			];
+
 			menu = "${pkgs.rofi}/bin/rofi";
 			
 			keybindings = lib.mkOptionDefault {
 				"${modifier}+Return" = "exec ${pkgs.alacritty}/bin/alacritty";
 				"${modifier}+d" = "exec --no-startup-id ${pkgs.rofi}/bin/rofi -show drun -modi drun";
-				"${modifier}+Shift+f" = "exec flameshot gui";
+				"${modifier}+Shift+f" = "exec ${pkgs.xfce.xfce4-screenshooter}/bin/xfce4-screenshooter -r";
 				"XF86AudioMute" = "exec amixer set Master toggle";
         "XF86AudioLowerVolume" = "exec amixer set Master 4%-";
         "XF86AudioRaiseVolume" = "exec amixer set Master 4%+";
@@ -96,6 +102,8 @@ in
 			    { title="MuseScore: Play Panel"; }
 			    { class="Pavucontrol"; }
 			    { title="Contrôle du volume"; }
+			    { class="Blueman-manager"; }
+			    { class="Blueman-assistant"; }
         ];
         border = 1;
       };

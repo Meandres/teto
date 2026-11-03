@@ -1,25 +1,15 @@
-{ config, pkgs, username, hostname, flakepkgs, ... }:
-
+{ config, pkgs, username, hostname, ... }:
 {
-  imports =
-    [
-			./pkgs.nix
-    ];
+  imports = [
+    ./base.nix
+    ./pkgs.nix
+  ];
 
-  # Bootloader.
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
-
-  boot.kernelPackages = pkgs.linuxPackages_latest;
-
-  networking.hostName = hostname;
-  # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
+  # btusb re-enables autosuspend after udev runs; disable it at the module level.
+  boot.extraModprobeConfig = "options btusb enable_autosuspend=0";
 
   networking.networkmanager.enable = true;
-
-  time.timeZone = "Europe/Berlin";
-
-  i18n.defaultLocale = "fr_FR.UTF-8";
+  networking.networkmanager.plugins = [ pkgs.networkmanager-openvpn ];
 
   i18n.extraLocaleSettings = {
     LC_ADDRESS = "fr_FR.UTF-8";
@@ -57,15 +47,32 @@
   };
 
   environment.pathsToLink = [ "/libexec" ];
-	users.groups.${username} = {};
-	users.users.${username} = {
-		isNormalUser = true;
-		group = username;
-		extraGroups = [ "wheel" "networkmanager" ];
-	};
+  users.users.${username}.extraGroups = [ "networkmanager" ];
 
-  console.keyMap = "fr";
-  services.printing.enable = true;
+  hardware.bluetooth = {
+    enable = true;
+    powerOnBoot = true;
+    settings = {
+      General = {
+        # Enable experimental features for better codec support (AAC, LDAC, aptX)
+        Experimental = true;
+        # Keep A2DP (stereo music) profile — prevents downgrade to mono HFP
+        MultiProfile = "multiple";
+      };
+    };
+  };
+  services.blueman.enable = true;
+
+  services.printing = {
+    enable = true;
+    drivers = with pkgs; [ gutenprint hplip brlaser cnijfilter2 ];
+  };
+
+  services.avahi = {
+    enable = true;
+    nssmdns4 = true;
+    openFirewall = true;
+  };
 
   # Enable sound with pipewire.
   services.pulseaudio.enable = false;
@@ -75,14 +82,45 @@
     alsa.enable = true;
     alsa.support32Bit = true;
     pulse.enable = true;
+    wireplumber = {
+      enable = true;
+      extraConfig = {
+        # Prefer higher-quality codecs; increase BT buffer to reduce crackling
+        "bluetooth-policy" = {
+          "wireplumber.settings" = {
+            "bluetooth.autoswitch-to-headset-profile" = false;
+          };
+        };
+        "bluetooth-properties" = {
+          "monitor.bluez.properties" = {
+            # Disable SBC-XQ: its larger packets (bitpool 76, ~617 bytes) are
+            # more sensitive to the brief RF errors visible in the LQ reading.
+            # Standard SBC (bitpool 53, ~420 bytes) is smaller and survives
+            # the same interference without audible crackling.
+            "bluez5.enable-sbc-xq" = false;
+            "bluez5.enable-msbc" = true;
+            "bluez5.enable-hw-volume" = true;
+            "bluez5.codecs" = [ "sbc" ];
+          };
+        };
+      };
+    };
   };
-
-  # Install firefox.
-  nixpkgs.config.allowUnfree = true;
-
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
   programs.nix-ld.enable = true;
 
   services.udisks2.enable = true;
+
+  xdg.portal = {
+    enable = true;
+    extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
+    config.common.default = "*";
+  };
+
+  # Disable USB autosuspend for the Intel Bluetooth adapter.
+  # Without this, the adapter sleeps after 2s of silence and the wake-up
+  # causes audible crackling on the Bose SoundLink.
+  services.udev.extraRules = ''
+    SUBSYSTEM=="usb", ATTRS{idVendor}=="8087", ATTRS{idProduct}=="0026", ATTR{power/control}="on"
+  '';
 }

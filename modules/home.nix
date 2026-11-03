@@ -18,6 +18,7 @@
 	xdg.userDirs = {
 		enable = true;
 		createDirectories = false;
+		setSessionVariables = true;
 		desktop     = "$HOME";
 		documents   = "$HOME";
 		download    = "$HOME";
@@ -29,6 +30,19 @@
 	};
 	#xdg.cacheHome = "/scratch/${username}/.cache";
 	#xdg.stateHome = "/scratch/${username}/.local/share";
+
+	home.packages = with pkgs; [
+		claude-code
+		feh
+	];
+
+	home.pointerCursor = {
+		name = "Adwaita";
+		package = pkgs.adwaita-icon-theme;
+		size = 24;
+		gtk.enable = true;
+		x11.enable = true;
+	};
 
 	programs.vscode = {
 		enable = true;
@@ -54,9 +68,32 @@
 	programs.bash = {
 		enable = true;
 		enableCompletion = true;
+		sessionVariables = {
+			NIXPKGS_ALLOW_UNFREE = "1";
+		};
 	};
 	services.udiskie = {
 		enable = true;
 		tray = "auto";
+	};
+
+	programs.autorandr.enable = true;
+	services.autorandr.enable = true;
+
+	programs.ssh = {
+		enable = true;
+		matchBlocks = {
+			mehve = {
+				hostname = "mehve.your-domain.example";
+				user = username;
+				identityFile = "~/.ssh/id_ed25519_l";
+				identitiesOnly = true;
+			};
+			"*.dos.cit.tum.de" = {
+				user = username;
+				identityFile = "~/.ssh/id_ed25519_l";
+				identitiesOnly = true;
+			};
+		};
 	};
 }

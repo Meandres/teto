@@ -24,5 +24,15 @@
 			userName = "Meandres";
 			userEmail = "ilya.meignan-masson@mailoo.org";
 		};
+		ssh = {
+			enable = true;
+			matchBlocks = {
+				"*.dos.cit.tum.de" = {
+					user = username;
+					identityFile = "~/.ssh/id_ed25519_r";
+					identitiesOnly = true;
+				};
+			};
+		};
 	};
 }

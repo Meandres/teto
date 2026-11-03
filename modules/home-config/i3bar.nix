@@ -4,11 +4,11 @@ let
   fg     = "#FFFFFF";
   fg-alt = "#707070";
   accent = "#e53935";
-  clipman = "${pkgs.xfce.xfce4-clipman-plugin}/bin/xfce4-clipman-history";
+  clipman = "${pkgs.xfce4-clipman-plugin}/bin/xfce4-clipman-history";
 in
 {
   home.packages = with pkgs; [
-    xfce.xfce4-clipman-plugin
+    xfce4-clipman-plugin
     nerd-fonts.iosevka
     nerd-fonts.symbols-only
   ];
@@ -16,7 +16,7 @@ in
   systemd.user.services.xfce4-clipman = {
     Unit.Description = "Xfce4 Clipman clipboard manager";
     Service = {
-      ExecStart = "${pkgs.xfce.xfce4-clipman-plugin}/bin/xfce4-clipman";
+      ExecStart = "${pkgs.xfce4-clipman-plugin}/bin/xfce4-clipman";
       Restart = "on-failure";
     };
     Install.WantedBy = [ "default.target" ];
