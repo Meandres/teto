@@ -33,6 +33,7 @@ in
 		discord
 		slack
 		zulip
+		telegram-desktop
 
 		# productivity
 		notion-electron-fixed

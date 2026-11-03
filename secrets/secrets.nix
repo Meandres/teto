@@ -6,5 +6,7 @@ let
   keep = builtins.filter real;
 in
 {
-  "ssh_r_private.age".publicKeys = keep [ L hostKeys.mehve ];
+  "ssh_r_private.age".publicKeys       = keep [ L hostKeys.mehve ];
+  "telegram_bot_token.age".publicKeys  = keep [ L hostKeys.mehve ];
+  "github_token.age".publicKeys        = keep [ L hostKeys.mehve ];
 }
